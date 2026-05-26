@@ -20,10 +20,10 @@ export default async function Home() {
       <div className="max-w-5xl mx-auto">
         
         {/* Header Section */}
-        <div className="flex justify-between items-center mb-10">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">ProximaMonitor</h1>
-            <p className="text-gray-500">Real-time API and Website Health Dashboard</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">ProximaMonitor</h1>
+            <p className="text-gray-500 text-sm md:text-base">Real-time API and Website Health Dashboard</p>
           </div>
           
           <PingButton /> 
