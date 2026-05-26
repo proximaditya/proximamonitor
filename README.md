@@ -1,36 +1,115 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ProximaMonitor
 
-## Getting Started
+**A self-hosted, real-time API and Website Health Dashboard.**
 
-First, run the development server:
+[![Live Demo](https://img.shields.io/badge/Live_Demo-View_Project-blue?style=for-the-badge)](https://proximaditya-project.vercel.app/)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-6-1B222D?style=for-the-badge&logo=prisma)](https://prisma.io/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
+*Experience the live project here: [https://proximaditya-project.vercel.app/](https://proximaditya-project.vercel.app/)*
+
+---
+
+## 🎥 Project Demo
+
+*(Demo GIF coming soon...)*
+<!-- Replace the line below with your actual gif once you record it -->
+<!-- ![ProximaMonitor Demo](./demo.gif) -->
+
+---
+
+## 📖 The Vision & Goal
+
+### The Problem
+Developers, indie hackers, and small businesses rely heavily on web applications and external APIs. When a service goes down, you need to know immediately. However, industry-standard monitoring tools (like Datadog, UptimeRobot, or New Relic) are often bloated, expensive, and overly complex for simple use cases. 
+
+### The Solution: ProximaMonitor
+ProximaMonitor was built to bridge this gap. It is a lightweight, self-hosted, full-stack monitoring dashboard that allows users to independently track the uptime and latency of their favorite websites and critical API endpoints. 
+
+### Core Agenda
+1. **Simplicity:** Provide a clean, distraction-free UI indicating `UP` or `DOWN` statuses at a glance.
+2. **Speed:** Measure response latency (in milliseconds) to detect degraded performance before a full outage occurs.
+3. **Full CRUD Control:** Empower the user to easily Add, Read, Update (Ping), and Delete tracking monitors directly from the UI without touching the database.
+
+---
+
+## ✨ Key Features
+
+- **Real-Time Ping Engine:** A custom-built backend engine that fetches target URLs and calculates exact response times.
+- **Dynamic Status Badges:** Visual indicators that instantly highlight if a service is healthy (Green/UP) or failing (Red/DOWN).
+- **Interactive UI:** Users can trigger manual health checks across all monitors with a single click.
+- **Serverless Ready:** Fully optimized to be deployed on Vercel's serverless edge architecture.
+- **Responsive Design:** Beautifully styled with Tailwind CSS to work flawlessly on both desktop and mobile.
+
+---
+
+## ⚠️ Important Database Note (SQLite vs Neon PostgreSQL)
+
+If you explore the source code of this repository, you may notice a `dev.db` file. 
+
+During early local development, this project was bootstrapped using a local **SQLite** database (`dev.db`). However, SQLite is not compatible with Serverless deployment platforms like Vercel (because serverless environments wipe local files after every execution).
+
+To make this project production-ready, the database architecture was migrated to **Neon DB (PostgreSQL)**. 
+
+**If you are cloning this repository:**
+The current `prisma/schema.prisma` is configured for **PostgreSQL**. To run this locally, you must create a free Neon database and connect it via your `.env` file (see instructions below). The `dev.db` file remains in the repo purely as a historical artifact of the development process.
+
+---
+
+## 🛠️ Getting Started (Local Setup)
+
+Want to run ProximaMonitor on your own machine? Follow these steps:
+
+### 1. Clone the repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/proximaditya/proximamonitor.git
+cd proximamonitor
+### 2. Install Dependencies
+```bash
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Configure the Database
+Create a `.env` file in the root directory. You will need a PostgreSQL connection string (I highly recommend Neon.tech for a free serverless Postgres DB).
+```env
+DATABASE_URL="postgresql://your_username:your_password@your_neon_host.aws.neon.tech/neondb?sslmode=require"
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 4. Initialize Prisma
+Sync your database schema and generate the Prisma client:
+```bash
+npx prisma generate
+npx prisma db push
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 5. Run the Development Server
+```bash
+npm run dev
+```
+Open `http://localhost:3000` in your browser. You can now add websites and start tracking their health!
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🧠 Tech Stack Deep Dive
+- **Frontend:** Next.js (App Router), React, Tailwind CSS
+- **Backend:** Next.js API Routes (Serverless Functions)
+- **Database:** PostgreSQL (Hosted on Neon)
+- **ORM:** Prisma Client
+- **Deployment:** Vercel (CI/CD connected directly to Git)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🔮 Future Enhancements
+While ProximaMonitor is fully functional, I plan to add the following features in the future:
+- **Automated Cron Jobs:** Automatically trigger the ping engine every 5 minutes in the background.
+- **Historical Charts:** Implement Recharts to visualize uptime and latency over a 24-hour period.
+- **Alerting System:** Send an automated email or Discord webhook when a service goes down.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📄 License
+This project is open-source and licensed under the **MIT License**. Feel free to use it, modify it, and learn from it!
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+*Built with ❤️ by Aditya.*
