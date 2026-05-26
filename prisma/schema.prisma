@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"  // <-- This was the missing magic line!
+}
+
+model Monitor {
+  id        String    @id @default(cuid())
+  name      String    
+  url       String    
+  interval  Int       @default(5) 
+  createdAt DateTime  @default(now())
+  logs      PingLog[] 
+}
+
+model PingLog {
+  id           String   @id @default(cuid())
+  monitorId    String
+  monitor      Monitor  @relation(fields: [monitorId], references: [id])
+  status       Int      
+  responseTime Int      
+  createdAt    DateTime @default(now())
+}
