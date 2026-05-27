@@ -5,24 +5,22 @@ import { useRouter } from "next/navigation";
 
 export default function AddMonitorForm() {
   const [name, setName] = useState("");
-  const [url, setUrl] = useState("https://");
+  const [url, setUrl] = useState(""); // <-- Starts blank now
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // Prevents the page from reloading
+    e.preventDefault(); 
     setLoading(true);
 
-    // Send the data to our new API route!
     await fetch("/api/monitors", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, url }),
     });
 
-    // Clear the form and refresh the page to show the new card
     setName("");
-    setUrl("https://");
+    setUrl(""); // <-- Resets to blank
     setLoading(false);
     router.refresh();
   };
@@ -42,12 +40,14 @@ export default function AddMonitorForm() {
       </div>
       
       <div className="flex-1 w-full">
-        <label className="block text-sm font-medium text-gray-700 mb-1">URL (must include https://)</label>
+        {/* Updated Label text! */}
+        <label className="block text-sm font-medium text-gray-700 mb-1">URL (http:// or https://)</label>
         <input 
           type="url" 
           required 
           value={url} 
           onChange={(e) => setUrl(e.target.value)} 
+          placeholder="https://www.example.com"
           className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-900 focus:ring-2 focus:ring-gray-900 outline-none"
         />
       </div>
