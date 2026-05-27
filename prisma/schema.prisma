@@ -8,12 +8,13 @@ datasource db {
 }
 
 model Monitor {
-  id        String    @id @default(cuid())
-  name      String    
-  url       String    
-  interval  Int       @default(5) 
-  createdAt DateTime  @default(now())
-  logs      PingLog[] 
+  id         String    @id @default(cuid())
+  name       String    
+  url        String    
+  interval   Int       @default(5) 
+  serverType String?   @default("Unknown")
+  createdAt  DateTime  @default(now())
+  logs       PingLog[] 
 }
 
 model PingLog {

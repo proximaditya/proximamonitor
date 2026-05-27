@@ -75,7 +75,7 @@ export default function PingButton() {
           Stop Live Mode ({timeString})
         </>
       ) : (
-        "▶ Run Live Health Check"
+        "▶ Run Live Check"
       )}
     </button>
   );

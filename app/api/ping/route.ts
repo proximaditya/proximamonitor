@@ -8,10 +8,17 @@ export async function GET() {
   for (const monitor of monitors) {
     const startTime = Date.now();
     let status = 500; 
+    let serverSignature = monitor.serverType; 
 
     try {
       const response = await fetch(monitor.url, { method: "GET" });
       status = response.status; 
+      
+      // Grab the hidden Server Header!
+      const headerServer = response.headers.get("server");
+      if (headerServer) {
+        serverSignature = headerServer;
+      }
     } catch (error) {
       status = 500; 
     }
@@ -19,11 +26,12 @@ export async function GET() {
     const responseTime = Date.now() - startTime; 
 
     await prisma.pingLog.create({
-      data: {
-        monitorId: monitor.id,
-        status: status,
-        responseTime: responseTime,
-      },
+      data: { monitorId: monitor.id, status, responseTime },
+    });
+
+    await prisma.monitor.update({
+      where: { id: monitor.id },
+      data: { serverType: serverSignature },
     });
 
     results.push({ name: monitor.name, status, responseTime });
