@@ -6,7 +6,6 @@ import DeleteButton from "./components/DeleteButton";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  // 1. Fetch the last 10 logs instead of just 1!
   const monitors = await prisma.monitor.findMany({
     include: {
       logs: {
@@ -16,11 +15,10 @@ export default async function Home() {
     },
   });
 
-  // Find the absolute lowest response time for the trophy
+  // --- NEW FEATURE: TOP 5 RANKING SYSTEM ---
   const upMonitors = monitors.filter(m => m.logs[0]?.status === 200 && m.logs[0]?.responseTime);
-  const fastestTime = upMonitors.length > 0 
-    ? Math.min(...upMonitors.map(m => m.logs[0].responseTime)) 
-    : null;
+  // Get a unique, sorted list of response times (fastest to slowest)
+  const sortedTimes = Array.from(new Set(upMonitors.map(m => m.logs[0].responseTime))).sort((a, b) => a - b);
 
   return (
     <main className="min-h-screen bg-gray-50 p-10">
@@ -39,7 +37,7 @@ export default async function Home() {
         {/* Add Website Form */}
         <AddMonitorForm />
 
-        {/* UI UPGRADE: The Empty State */}
+        {/* Empty State */}
         {monitors.length === 0 && (
           <div className="bg-white rounded-xl border-2 border-dashed border-gray-300 p-12 text-center mt-8">
             <span className="text-4xl mb-4 block">📡</span>
@@ -53,14 +51,51 @@ export default async function Home() {
           {monitors.map((monitor) => {
             const latestLog = monitor.logs[0];
             const isUp = latestLog?.status === 200;
-            const isFastest = latestLog?.responseTime === fastestTime && isUp;
+            const responseTime = latestLog?.responseTime;
+
+            // Determine Ranking
+            let rank = -1;
+            if (isUp && responseTime) {
+              rank = sortedTimes.indexOf(responseTime) + 1; // 1st, 2nd, 3rd, etc.
+            }
+
+            // Apply Styles based on Rank
+            let borderStyle = 'border-gray-200';
+            let textStyle = 'text-gray-900';
+            let icon = null;
+            let rankTitle = '';
+
+            if (rank === 1) {
+              borderStyle = 'border-yellow-400 ring-1 ring-yellow-400 shadow-yellow-100';
+              textStyle = 'text-yellow-600';
+              icon = '🏆';
+              rankTitle = '1st Place - Blazing Fast';
+            } else if (rank === 2) {
+              borderStyle = 'border-slate-400 ring-1 ring-slate-300';
+              textStyle = 'text-slate-600';
+              icon = '🥈';
+              rankTitle = '2nd Place - Extremely Fast';
+            } else if (rank === 3) {
+              borderStyle = 'border-amber-700/50 ring-1 ring-amber-700/30';
+              textStyle = 'text-amber-700';
+              icon = '🥉';
+              rankTitle = '3rd Place - Very Fast';
+            } else if (rank === 4) {
+              textStyle = 'text-blue-500';
+              icon = '✨';
+              rankTitle = '4th - Great Speed';
+            } else if (rank === 5) {
+              textStyle = 'text-indigo-500';
+              icon = '🌟';
+              rankTitle = '5th - Good Speed';
+            }
 
             // Prepare data for the Mini Bar Chart
-            const chartLogs = [...monitor.logs].reverse(); // Oldest to newest (left to right)
-            const maxTime = Math.max(...chartLogs.map(l => l.responseTime), 100); // Scale the graph
+            const chartLogs = [...monitor.logs].reverse(); 
+            const maxTime = Math.max(...chartLogs.map(l => l.responseTime), 100); 
 
             return (
-              <div key={monitor.id} className={`bg-white rounded-xl shadow-md p-6 border transition-all hover:shadow-lg ${isFastest ? 'border-yellow-400 ring-1 ring-yellow-400' : 'border-gray-200'}`}>
+              <div key={monitor.id} className={`bg-white rounded-xl shadow-md p-6 border transition-all hover:shadow-lg ${borderStyle}`}>
                 
                 {/* Card Header */}
                 <div className="flex justify-between items-center mb-4">
@@ -85,24 +120,23 @@ export default async function Home() {
                   <DeleteButton id={monitor.id} />
                 </div>
                 
-                {/* Latest Time */}
+                {/* Latest Time & Rank Icon */}
                 <div className="flex justify-between items-center text-sm pt-4 border-t border-gray-100 mb-4">
                   <span className="text-gray-500">Latest Response:</span>
                   <div className="flex items-center gap-2">
-                    {isFastest && <span title="Fastest Website" className="text-xl">🏆</span>}
-                    <span className={`font-mono font-bold text-lg ${isFastest ? 'text-yellow-600' : 'text-gray-900'}`}>
+                    {icon && <span title={rankTitle} className="text-xl drop-shadow-sm">{icon}</span>}
+                    <span className={`font-mono font-bold text-lg ${textStyle}`}>
                       {latestLog ? `${latestLog.responseTime} ms` : "No data"}
                     </span>
                   </div>
                 </div>
 
-                {/* UI UPGRADE: Mini Bar Chart (Sparkline) */}
+                {/* Mini Bar Chart */}
                 {chartLogs.length > 0 && (
                   <div className="mt-2 p-3 bg-gray-50 rounded-lg">
                     <p className="text-[10px] uppercase font-bold text-gray-400 mb-2 tracking-wider">History (Last 10)</p>
                     <div className="h-10 w-full flex items-end gap-1">
                       {chartLogs.map((log) => {
-                        // Calculate how tall the bar should be based on the max time
                         const heightPercent = Math.max((log.responseTime / maxTime) * 100, 5); 
                         const isBarUp = log.status === 200;
                         
