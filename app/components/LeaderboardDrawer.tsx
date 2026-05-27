@@ -21,7 +21,7 @@ export default function LeaderboardDrawer({ leaderboard }: { leaderboard: Leader
         style={{ transform: "translateY(-50%)" }}
         title="View Leaderboard"
       >
-        ◀ 🏆 
+        ◀  
       </button>
 
       {/* Overlay */}
