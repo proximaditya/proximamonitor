@@ -22,7 +22,7 @@
 
 ## 📖 The Vision & Practical Use Cases
 
-**The Problem:** Standard monitoring tools (like Datadog or UptimeRobot) are incredibly powerful, but they are often bloated and overkill for simple projects. Sometimes, you just want to know: *Is my API alive? How fast is it? And what is hosting it?*
+**The Problem:** Standard monitoring tools (like Datadog or UptimeRobot) are incredibly powerful, but they are often bloated and overkill for simple projects. Sometimes, you just want to know: *Is my API alive? How fast is it? And also can know what is hosting it? if you are unaware*
 
 **The Solution:** ProximaMonitor is a streamlined, serverless-ready dashboard designed for quick insights without the enterprise overhead. 
 
